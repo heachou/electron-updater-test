@@ -2,9 +2,10 @@ import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+import { initAutoUpdater, initSmallestUpdater } from './updater'
+import { autoUpdater } from 'electron-updater'
 
 function createWindow(): void {
-  // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 900,
     height: 670,
@@ -19,6 +20,12 @@ function createWindow(): void {
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
+    //  初始化全量更新
+    initAutoUpdater(mainWindow)
+    // 初始化增量更新
+    autoUpdater.on('update-not-available', () => {
+      initSmallestUpdater(mainWindow)
+    })
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -50,7 +57,7 @@ app.whenReady().then(() => {
   })
 
   // IPC test
-  ipcMain.on('ping', () => console.log('pong'))
+  ipcMain.on('ping', () => console.log('pong pong'))
 
   createWindow()
 

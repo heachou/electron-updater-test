@@ -1,0 +1,36 @@
+name: Build Electron App
+
+on:
+  push:
+    branches:
+      - main # 或者您的主要分支名称
+
+jobs:
+  build:
+    runs-on: windows-latest # 您也可以根据需要选择 macos-latest 或 ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x] # 根据 package.json 中的 engines.node
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Electron app
+        run: npm run build:win
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: electron-app
+          path: dist/ # 根据 electron-builder.json 中的 output 目录

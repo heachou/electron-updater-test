@@ -5,7 +5,7 @@ function App(): React.JSX.Element {
 
   return (
     <>
-      <div className="creator">Powered by electron-vite0.0.6</div>
+      <div className="creator">Powered by electron-vite0.0.63</div>
       <div className="text">
         Build an Electron app with <span className="react">React</span>
         &nbsp;and <span className="ts">TypeScript</span>

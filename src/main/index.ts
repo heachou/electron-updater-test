@@ -3,7 +3,8 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { initAutoUpdater, initSmallestUpdater } from './updater'
-import { autoUpdater } from 'electron-updater'
+import { dialog } from 'electron/main'
+// import { autoUpdater } from 'electron-updater'
 
 function createWindow(): void {
   const mainWindow = new BrowserWindow({
@@ -21,10 +22,16 @@ function createWindow(): void {
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
     //  初始化全量更新
-    initAutoUpdater(mainWindow)
+    // initAutoUpdater(mainWindow)
     // 初始化增量更新
-    autoUpdater.on('update-not-available', () => {
-      initSmallestUpdater(mainWindow)
+    // autoUpdater.on('update-not-available', () => {
+    // })
+    initSmallestUpdater(mainWindow)
+    dialog.showMessageBox(mainWindow, {
+      title: '提示',
+      message: '请在项目根目录下创建dev-app-update.yml文件',
+      type: 'info',
+      buttons: ['确定']
     })
   })
 

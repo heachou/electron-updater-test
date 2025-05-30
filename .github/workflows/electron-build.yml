@@ -25,7 +25,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 8 # 指定 pnpm 版本，可以根据需要调整
+          version: 9.13.2 # 指定 pnpm 版本，可以根据需要调整
 
       - name: Install dependencies
         run: pnpm install

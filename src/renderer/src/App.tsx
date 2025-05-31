@@ -1,31 +1,99 @@
-import Versions from './components/Versions'
+import React from 'react'
+import { useCallback, useEffect } from 'react'
+import { Alert } from 'antd'
+import useLocalConfigStore from './store/localStore'
+import { useMount } from 'ahooks'
+import { usePutterState } from './hooks/usePutterState'
+import { useWeightDevice } from './hooks/useWeightDevice'
 
-function App(): React.JSX.Element {
-  const ipcHandle = (): void => window.electron.ipcRenderer.send('ping')
+function App({ children }: { children: React.ReactNode }) {
+  const getConfig = useLocalConfigStore((state) => state.getConfig)
+  const config = useLocalConfigStore((state) => state.config)
+
+  useMount(() => {
+    getConfig()
+  })
+
+  const {
+    startPutterDeviceEnable,
+    startPollingPutterState,
+    opened,
+    connect: connectPutterDevice
+  } = usePutterState()
+  const { startPollingWeightDevice, opened: weightDeviceOpened, connect } = useWeightDevice()
+
+  useEffect(() => {
+    connectPutterDevice().then(() => {
+      console.log('🚀 ~ connectPutterDevice ~ connectPutterDevice:')
+      startPollingPutterState()
+    })
+  }, [connectPutterDevice, startPollingPutterState])
+
+  useEffect(() => {
+    connect().then(() => {
+      startPollingWeightDevice()
+    })
+  }, [connect, startPollingWeightDevice, weightDeviceOpened])
+
+  const listenerUserloginSuccess = useCallback(() => {
+    // 用户登录成功，开启所有的定时使能选项
+    startPutterDeviceEnable(true)
+    // 获取一次重量
+    if (weightDeviceOpened) {
+      startPollingWeightDevice()
+    }
+  }, [startPollingWeightDevice, startPutterDeviceEnable, weightDeviceOpened])
+
+  useEffect(() => {
+    const removeListner = window.electron.on('userLoginSuccess', listenerUserloginSuccess)
+    return () => {
+      removeListner()
+    }
+  }, [listenerUserloginSuccess])
+
+  const listenerSessionExprired = useCallback(() => {
+    // 用户退出登录
+    if (config?.canPutWithoutAuth) {
+      startPutterDeviceEnable(true)
+    } else {
+      startPutterDeviceEnable(false)
+    }
+    // 获取一次重量
+    startPollingWeightDevice()
+  }, [startPollingWeightDevice, startPutterDeviceEnable, config])
+
+  useEffect(() => {
+    const removeListner = window.electron.on('sessionExpired', listenerSessionExprired)
+    return () => {
+      removeListner()
+    }
+  }, [listenerSessionExprired])
+
+  useEffect(() => {
+    if (!config) {
+      return
+    }
+    if (!opened) {
+      return
+    }
+    // 如果可以不登录直接投递
+    if (config?.canPutWithoutAuth) {
+      startPutterDeviceEnable(true)
+    } else {
+      // 否则，关闭所有的定时使能选项
+      startPutterDeviceEnable(false)
+    }
+  }, [config, config?.canPutWithoutAuth, opened])
 
   return (
     <>
-      <div className="creator">Powered by electron-vite0.0.63</div>
-      <div className="text">
-        Build an Electron app with <span className="react">React</span>
-        &nbsp;and <span className="ts">TypeScript</span>
-      </div>
-      <p className="tip">
-        Please try pressing <code>F12</code> to open the devTool
-      </p>
-      <div className="actions">
-        <div className="action">
-          <a href="https://electron-vite.org/" target="_blank" rel="noreferrer">
-            Documentation
-          </a>
+      {(!opened || !weightDeviceOpened) && (
+        <div className="absolute top-2 left-2 z-10">
+          {!opened && <Alert message="推杆设备未连接" type="error" />}
+          {!weightDeviceOpened && <Alert message="重量秤设备未连接" type="error" />}
         </div>
-        <div className="action">
-          <a target="_blank" rel="noreferrer" onClick={ipcHandle}>
-            Send IPC
-          </a>
-        </div>
-      </div>
-      <Versions></Versions>
+      )}
+      {children}
     </>
   )
 }

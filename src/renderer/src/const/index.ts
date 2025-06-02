@@ -1,4 +1,4 @@
-export const LOGOUT_DELAY_SECONDS = 180 // 180 秒
+export const LOGOUT_DELAY_SECONDS = 1800 // 180 秒
 
 export const mediaDomain =
   process.env.NODE_ENV === 'development'

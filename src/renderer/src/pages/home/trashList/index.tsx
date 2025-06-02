@@ -166,9 +166,9 @@ const TrashList = () => {
     return !loginUser
   }, [config?.canPutWithoutAuth, loginUser])
 
-  if (!opened) {
-    return null
-  }
+  // if (!opened) {
+  //   return null
+  // }
 
   return (
     <>

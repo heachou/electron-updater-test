@@ -19,6 +19,9 @@ export class ModbusClient {
   }
 
   public async openPort(portPath: string, options = { baudRate: 115200 }): Promise<void> {
+    if (!portPath) {
+      return Promise.reject(new Error('portPath is required'))
+    }
     if (this.modbusClients.has(portPath)) {
       const existingClient = this.modbusClients.get(portPath)
       if (existingClient?.isOpen) {

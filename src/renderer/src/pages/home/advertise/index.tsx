@@ -70,7 +70,7 @@ const Advertise = () => {
       >
         <Carousel autoplay autoplaySpeed={10000} dots={false}>
           {carouselItems.map((item) => (
-            <div key={item.id} className="h-[220px] overflow-hidden rounded">
+            <div key={item.id} className="h-[200px] overflow-hidden rounded">
               <img
                 src={item.imageUrl}
                 alt={item.alt}

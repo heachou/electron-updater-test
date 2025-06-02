@@ -44,12 +44,6 @@ function createWindow() {
     })
   })
 
-  console.log(
-    '🚀 ~ file: index.ts:117 ~ ipcMain ~ ipcMain:',
-    is.dev,
-    process.env['ELECTRON_RENDERER_URL']
-  )
-
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
     mainWindow.webContents.openDevTools()
@@ -59,6 +53,7 @@ function createWindow() {
 
   mainWindow.on('closed', () => {
     mainWindow = null
+    Service.getInstance().store.clear()
     Service.getInstance().setInstance({ mainWindow: null })
   })
   // 禁止缩放

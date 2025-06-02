@@ -1,11 +1,12 @@
-import React, { useState, useEffect, useMemo } from 'react'
-import useUserStore from '@renderer/store/userStore'
+import { useState, useEffect, useMemo } from 'react'
 import { Avatar, Button, Typography, Statistic, Alert, Space } from 'antd' // 引入 Ant Design 组件
 import { UserOutlined, LogoutOutlined, RiseOutlined } from '@ant-design/icons' // 引入图标
-import { defaultAvatarUrl, LOGOUT_DELAY_SECONDS, mediaDomain } from '@renderer/const'
 import PutInStatModal from './putInStatModal'
 import FaceBindModal from './faceBindModal'
 import CardBindModal from './cardBindModal'
+import useUserStore from '@renderer/store/userStore'
+import { LOGOUT_DELAY_SECONDS, mediaDomain, defaultAvatarUrl } from '@renderer/const'
+import RealTimeSpeechRecognition from '@renderer/components/RealTimeSpeechRecognition'
 
 const { Title, Text } = Typography
 
@@ -98,12 +99,15 @@ const Authed = () => {
         </div>
         {/* 主体：用户积分 */}
         <div className="space-y-2 flex-col flex items-center justify-center">
-          <div className="text-center">
-            <Text type="warning">系统将于 {countdown} 秒后自动注销</Text>
-          </div>
+          <Alert
+            className="py-3 text-base w-full"
+            description={`请在规定的时间内完成投递，否则需要再次扫码/刷卡开门。系统将于 ${countdown} 秒后自动注销`}
+            type="warning"
+            showIcon
+          />
           <Statistic
             title="当前积分"
-            value={scoreData?.scoreStat.totalScore || 0}
+            value={scoreData?.scoreStat.score || 0}
             precision={0}
             valueStyle={{ color: '#3f8600', textAlign: 'center', fontSize: 36 }}
           />
@@ -122,17 +126,11 @@ const Authed = () => {
             />
           </div>
         </div>
-        {/* 底部提示 */}
-        <Alert
-          className="py-3 text-base"
-          description="请在规定的时间内完成投递，否则需要再次扫码/刷卡开门。"
-          type="warning"
-          showIcon
-        />
       </div>
       <PutInStatModal visible={isModalVisible} onClose={() => showPutInStatModalOpen(false)} />
       <FaceBindModal open={faceBindModalOpen} onClose={() => faceBindModalOpenSet(false)} />
       <CardBindModal open={cardBindModalOpen} onClose={() => cardBindModalOpenSet(false)} />
+      <RealTimeSpeechRecognition />
     </>
   )
 }

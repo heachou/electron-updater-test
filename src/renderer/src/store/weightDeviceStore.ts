@@ -11,7 +11,6 @@ interface PutEquipmentState {
   updateWeightDeviceState: (newState: number[]) => void
 }
 
-// @ts-ignore 暂时忽略
 const useWeightDeviceStore = create<PutEquipmentState>()(
   immer((set) => ({
     weightState: undefined,

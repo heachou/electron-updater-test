@@ -29,6 +29,7 @@ export const weightDeviceHandlers = () => {
         ...params,
         port
       })) as number[]
+      console.log('🚀 ~ weightDeviceHandlers ~ rawResult:', rawResult)
       return rawResult
     },
     writeWeightSingleRegisters: async (params: {

@@ -25,7 +25,7 @@ export const useWeightDevice = () => {
 
   // TO DO bug
   const getState = useCallback(async () => {
-    const res = await callApi('readWeightMultipleRegisters', { startAddress: 0, registerCount: 12 })
+    const res = await callApi('readWeightMultipleRegisters', { startAddress: 0, registerCount: 4 })
     console.log('🚀 ~ getState ~ res:', res)
     return res
   }, [])
@@ -33,7 +33,7 @@ export const useWeightDevice = () => {
   // 获取状态, 每60秒执行一次
   const { runAsync: startPollingWeightDevice, refresh: refreshWeightState } = useRequest(getState, {
     ready: opened,
-    pollingInterval: 30 * 1000,
+    pollingInterval: 10 * 1000,
     manual: true,
     onSuccess(res) {
       updateWeightDeviceState(res)

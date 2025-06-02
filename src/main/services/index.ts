@@ -43,6 +43,7 @@ export interface ISendMessageToWindow {
   onWsMessage: (message: string) => void
   onWsError: (error: Error) => void
   onWsClose: () => void
+  onAudioReady: () => void
   // 自动更新
 }
 
